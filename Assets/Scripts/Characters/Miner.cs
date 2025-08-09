@@ -1,0 +1,106 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.TextCore.Text;
+
+public class Miner : GameEntity
+{
+
+    public float MineTime;
+
+    private bool onMine;
+
+
+    Rigidbody2D rb;
+    public float speed;
+    [SerializeField] private State _state;
+    private Rock TargetRock;
+
+    [SerializeField] private Transform BasePos;
+
+    void Start()
+    {
+        Debug.Log(ZPos + entityType);
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        ZPos = Mathf.RoundToInt(transform.position.z);
+
+        switch (_state)
+        {
+            case State.Idle:
+                var AllRocks = FindObjectsByType<Rock>(FindObjectsSortMode.None);
+                OnIdle(AllRocks);
+                break;
+
+            case State.WalkingToTarget:
+                if (TargetRock is not null)
+                    OnWalkingToTarget();
+                break;
+
+            case State.Mining:
+                OnMining();
+                break;
+
+            case State.WalkingToBase:
+                OnWalkingToBase();
+                break;
+        }
+    }
+
+    private void OnIdle(Rock[] Rocks)
+    {
+        if (Rocks is null) return;
+
+        foreach (var rock in Rocks)
+        {
+            if (TargetRock is null)
+                TargetRock = rock;
+
+            else
+            {
+                var distanceRock = Vector2.Distance(transform.position, rock.miningPos.transform.position);
+                var distanceTarget = Vector2.Distance(transform.position, TargetRock.miningPos.transform.position);
+
+                if (distanceRock < distanceTarget) TargetRock = rock;
+            }
+        }
+
+        _state = State.WalkingToTarget;
+    }
+
+
+    private void OnWalkingToTarget()
+    {
+        Vector3 TargetPos = TargetRock.miningPos.position;
+        transform.position = Vector3.MoveTowards(transform.position,TargetPos, speed * Time.deltaTime);
+        if (transform.position == TargetPos) _state = State.Mining;
+    }
+
+
+    private void OnMining()
+    {
+        if (onMine is false)
+            StartCoroutine(MineTimer());
+    }
+
+    IEnumerator MineTimer()
+    {
+        onMine = true;
+        yield return new WaitForSeconds(MineTime);
+        _state = State.WalkingToBase;
+        onMine = false;
+    }
+
+    private void OnWalkingToBase()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, BasePos.transform.position, speed * Time.deltaTime);
+        if (transform.position == BasePos.transform.position) _state = State.Idle;
+        Debug.Log("Base");
+    }
+}
