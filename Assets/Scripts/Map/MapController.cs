@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MapController : MonoBehaviour
 {
-        [Header("Zoom Ayarları")]
+    [Header("Zoom Ayarları")]
     public float zoomSpeed = 5f;
     public float minZoom = 3f;
     public float maxZoom = 7f;  // zoom out sınırı düşürüldü
@@ -13,6 +16,9 @@ public class MapController : MonoBehaviour
     public float moveSpeed = 0.5f;
     public Vector2 minBounds;
     public Vector2 maxBounds;
+
+    [Header("Level Ayarları")] 
+    public TextMeshProUGUI levelNameTmp;
 
     private Camera cam;
     private Vector3 lastMousePosition;
@@ -24,9 +30,7 @@ public class MapController : MonoBehaviour
 
     void Update()
     {
-        HandleZoom();
-        HandleMouseDrag();
-        ClampCameraPosition();
+
     }
 
     void HandleZoom()
@@ -69,5 +73,11 @@ public class MapController : MonoBehaviour
         clampedPos.x = Mathf.Clamp(clampedPos.x, minX, maxX);
         clampedPos.y = Mathf.Clamp(clampedPos.y, minY, maxY);
         transform.position = clampedPos;
+    }
+
+    public void enterLevel()
+    {
+        string name = levelNameTmp.text;
+        SceneManager.LoadScene("GameTestScene");
     }
 }
