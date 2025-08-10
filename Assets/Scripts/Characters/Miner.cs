@@ -1,10 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.TextCore.Text;
 
 public class Miner : GameEntity
 {
@@ -34,7 +29,7 @@ public class Miner : GameEntity
         switch (_state)
         {
             case State.Idle:
-                var AllRocks = FindObjectsByType<Rock>(FindObjectsSortMode.None);
+                Rock[] AllRocks = FindObjectsByType<Rock>(FindObjectsSortMode.None);
                 OnIdle(AllRocks);
                 break;
 

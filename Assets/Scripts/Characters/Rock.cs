@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Rock : GameEntity
 {
     public Transform miningPos;
 
-        void Start()
+    void Start()
     {
         ZPos = Mathf.RoundToInt(transform.position.z);
     }

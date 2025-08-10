@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -20,6 +21,7 @@ public class MapController : MonoBehaviour
     private Vector3 lastMousePosition;
 
     public TextMeshProUGUI levelName;
+    public bool isCameraControlsActive = true;
 
     void Start()
     {
@@ -28,8 +30,12 @@ public class MapController : MonoBehaviour
 
     void Update()
     {
-        HandleZoom();
-        HandleMouseDrag();
+        if (isCameraControlsActive)
+        {
+            HandleZoom();
+            HandleMouseDrag();
+            ClampCameraPosition();
+        }
     }
 
     void HandleZoom()
@@ -44,12 +50,12 @@ public class MapController : MonoBehaviour
 
     void HandleMouseDrag()
     {
-        if (Input.GetMouseButtonDown(2)) // Orta mouse tuşuna basıldığında
+        if (Input.GetMouseButtonDown(0)) 
         {
             lastMousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
         }
 
-        if (Input.GetMouseButton(2))
+        if (Input.GetMouseButton(0))
         {
             Vector3 currentMousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
             Vector3 difference = lastMousePosition - currentMousePosition;
