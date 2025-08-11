@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Landmark
   - PlayerSummonPoint
+  - PlayerBase
+  - EnemyBase
   layers:
   - Default
   - TransparentFX

@@ -17,4 +17,5 @@ public abstract class GameEntity : MonoBehaviour
     }
 
     public string entityType;
+
 }

@@ -1,7 +1,14 @@
-    public enum State
-    {
-        Idle,
-        WalkingToTarget,
-        Mining,
-        WalkingToBase
-    }
+public enum State
+{
+    Idle,
+    WalkingToTarget,
+    Mining,
+    WalkingToBase,
+    EngagedInBattle
+}
+public enum playerState {
+    Garrison,
+    Defensive,
+    Offensive,
+    Losing
+}

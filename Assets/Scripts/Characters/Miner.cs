@@ -1,23 +1,22 @@
 using System.Collections;
 using UnityEngine;
 
-public class Miner : GameEntity
+public class Miner : LivingEntity
 {
 
-    public float MineTime;
-
     private bool onMine;
+    private int goldAmount;
+    private const int goldAmountPerSecond = 10;
+    private int goldAmountLimit = 100;
 
 
-    Rigidbody2D rb;
     public float speed;
-    [SerializeField] private State _state;
     private Rock TargetRock;
 
-    [SerializeField] private Transform BasePos;
 
-    void Start()
+    new void Start()
     {
+        base.Start();
         Debug.Log(ZPos + entityType);
         rb = GetComponent<Rigidbody2D>();
     }
@@ -87,7 +86,11 @@ public class Miner : GameEntity
     IEnumerator MineTimer()
     {
         onMine = true;
-        yield return new WaitForSeconds(MineTime);
+        while (goldAmount < goldAmountLimit)
+        {
+            yield return new WaitForSeconds(1);
+            goldAmount += goldAmountPerSecond; 
+        }
         _state = State.WalkingToBase;
         onMine = false;
     }
@@ -95,7 +98,17 @@ public class Miner : GameEntity
     private void OnWalkingToBase()
     {
         transform.position = Vector3.MoveTowards(transform.position, BasePos.transform.position, speed * Time.deltaTime);
-        if (transform.position == BasePos.transform.position) _state = State.Idle;
-        Debug.Log("Base");
+        if (transform.position == BasePos.transform.position)
+        {
+            _state = State.Idle;
+            if (isAlly)
+            {
+                GoldSystem.PlayerGold += goldAmount;
+            }
+            else {
+                GoldSystem.EnemyGold += goldAmount;
+            }
+            goldAmount = 0;
+        } 
     }
 }
