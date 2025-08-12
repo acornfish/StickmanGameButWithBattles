@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class GameEntity : MonoBehaviour
 {
     private int _ZPos;
+
     public int ZPos
     {
         get
@@ -17,5 +18,4 @@ public abstract class GameEntity : MonoBehaviour
     }
 
     public string entityType;
-
 }

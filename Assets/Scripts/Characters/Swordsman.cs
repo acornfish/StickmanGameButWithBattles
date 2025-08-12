@@ -7,16 +7,19 @@ public class Swordsman : LivingEntity
 {
     public float speed;
     private LivingEntity target;
+    private int id;
 
     new void Start()
     {
         base.Start();
         rb = GetComponent<Rigidbody2D>();
+        id = gameObject.GetInstanceID();
         _state = State.Idle;
     }
 
-    void Update()
+    new void Update()
     {
+        base.Update();
         ZPos = Mathf.RoundToInt(transform.position.z);
 
         switch (_state)
@@ -25,6 +28,14 @@ public class Swordsman : LivingEntity
                 if (GameMaster.currentPlayerState == playerState.Offensive)
                 {
                     findTarget();
+                }
+                else if (GameMaster.currentPlayerState == playerState.Defensive)
+                {
+                    getInFormation();
+                }
+                else
+                {
+                    _state = State.WalkingToBase;
                 }
                 break;
 
@@ -72,8 +83,11 @@ public class Swordsman : LivingEntity
     void onEngagedInBattle()
     {
         if (Vector3.Distance(transform.position, target.transform.position) > 1f) _state = State.Idle;
+        if (!target) _state = State.Idle;
+        if (_state != State.EngagedInBattle) return;
 
-        //Bunu ömer arkadaşıma salıyorum kesinlikle üşenmem ile alakası yok -invalid
+        target.GetComponent<LivingEntity>().health -= Time.deltaTime * 10; //Just for prototyping
+        // we need to implement a attack cycle
     }
 
     void walkToBase()
@@ -85,6 +99,21 @@ public class Swordsman : LivingEntity
 
     void getInFormation()
     {
-        // En keyifli yeri yine sana bıraktım ömer arkadaşım
+        int index = GameMaster.findInFormation(isAlly, id);
+        if (index == -1)
+        {
+            index = GameMaster.putInFormation(isAlly, id);
+        }
+        Vector2 targetPos = GameMaster.mapFormationIndexToPosition(isAlly, index);
+
+        transform.position = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+        if ((Vector2)transform.position == targetPos) _state = State.Idle;
+    }
+
+
+    protected internal new void Die()
+    {
+        base.Die();
+        Destroy(gameObject);
     }
 }

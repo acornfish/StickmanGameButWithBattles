@@ -21,8 +21,9 @@ public class Miner : LivingEntity
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    new void Update()
     {
+        base.Update();
         ZPos = Mathf.RoundToInt(transform.position.z);
 
         switch (_state)
@@ -53,6 +54,8 @@ public class Miner : LivingEntity
 
         foreach (var rock in Rocks)
         {
+            if (rock.isInUse) continue;
+
             if (TargetRock is null)
                 TargetRock = rock;
 
@@ -65,6 +68,7 @@ public class Miner : LivingEntity
             }
         }
 
+        if (!(TargetRock is null)) TargetRock.isInUse = true;
         _state = State.WalkingToTarget;
     }
 
@@ -88,10 +92,12 @@ public class Miner : LivingEntity
         onMine = true;
         while (goldAmount < goldAmountLimit)
         {
+            TargetRock.isInUse = true;
             yield return new WaitForSeconds(1);
             goldAmount += goldAmountPerSecond; 
         }
         _state = State.WalkingToBase;
+        TargetRock.isInUse = false;
         onMine = false;
     }
 
@@ -110,5 +116,11 @@ public class Miner : LivingEntity
             }
             goldAmount = 0;
         } 
+    }
+
+    protected internal new void Die()
+    {
+        base.Die();
+        Destroy(gameObject);
     }
 }
