@@ -25,11 +25,11 @@ public class Swordsman : LivingEntity
         switch (_state)
         {
             case State.Idle:
-                if (GameMaster.currentPlayerState == playerState.Offensive)
+                if ((isAlly ? GameMaster.currentPlayerState : GameMaster.currentEnemyState) == playerState.Offensive)
                 {
                     findTarget();
                 }
-                else if (GameMaster.currentPlayerState == playerState.Defensive)
+                else if ((isAlly ? GameMaster.currentPlayerState : GameMaster.currentEnemyState) == playerState.Defensive)
                 {
                     getInFormation();
                 }

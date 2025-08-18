@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ public abstract class LivingEntity : GameEntity
 
     public float health = 100;
     public Transform BasePos;
+
+    public Action onDeath = null;
 
     protected internal void Start()
     {
@@ -37,7 +40,9 @@ public abstract class LivingEntity : GameEntity
 
 
     protected internal void Die() {
+        if(onDeath != null) onDeath.Invoke();
         if (isAlly) GameMaster.playerUnitCount--; else GameMaster.enemyUnitCount--;
-    }
+    } 
+    
 }
 

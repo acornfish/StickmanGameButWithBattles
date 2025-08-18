@@ -13,7 +13,7 @@ public class SummonCard : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         foreach(GameObject g in FindObjectsByType<GameObject>(FindObjectsSortMode.None)) {
-            if (g.tag == "PlayerSummonPoint")
+            if (g.tag == "PlayerBase")
             {
                 summonPoint = g.transform;
             }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
-    public static playerState currentPlayerState = playerState.Defensive;
+    public static playerState currentPlayerState = playerState.Defensive, currentEnemyState = playerState.Defensive;
 
     [SerializeField] playerState playerState;
 

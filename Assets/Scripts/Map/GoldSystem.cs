@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GoldSystem : MonoBehaviour
 {
-    public static int EnemyGold;
+    public static int EnemyGold = 200;
     private static TextMeshProUGUI goldIndicator;
     public TextMeshProUGUI goldIndicatorText;
 

@@ -29,6 +29,9 @@ public class Miner : LivingEntity
         switch (_state)
         {
             case State.Idle:
+                //this line means walk to garrison and don't do anything until otherwise stated
+                if ((isAlly ? GameMaster.currentPlayerState : GameMaster.currentEnemyState) == playerState.Garrison) { _state = State.WalkingToBase; return; }
+                
                 Rock[] AllRocks = FindObjectsByType<Rock>(FindObjectsSortMode.None);
                 OnIdle(AllRocks);
                 break;
