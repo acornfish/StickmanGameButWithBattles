@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class SummonCard : MonoBehaviour
     public GameObject prefab;
     protected RectTransform rectTransform;
     protected Transform summonPoint;
+    [SerializeField] GameMaster.TroopType troopType;
 
 
     void Start()
@@ -32,10 +34,14 @@ public class SummonCard : MonoBehaviour
 
     public void onClick()
     {
-        if (GoldSystem.PlayerGold >= price)
+        if (GoldSystem.PlayerGold >= price && (GameMaster.playerUnitCount < 50))
         {
             GoldSystem.PlayerGold -= price;
-            Instantiate(prefab, summonPoint);
+
+            GameMaster.listNewSpawn(troopType, Time.time + (float)troopType, new Action(() =>
+            {
+                Instantiate(prefab, summonPoint);
+            }));
         }
     }
 

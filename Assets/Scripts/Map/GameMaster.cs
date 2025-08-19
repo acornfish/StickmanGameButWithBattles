@@ -1,21 +1,32 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
+    public enum TroopType
+    {
+        Miner = 5,
+        SwordsMan = 3,
+        Archer = 4
+    }
+
     public static playerState currentPlayerState = playerState.Defensive, currentEnemyState = playerState.Defensive;
 
     [SerializeField] playerState playerState;
 
-    public static int playerUnitCount, enemyUnitCount;
+    public static int playerUnitCount = -1, enemyUnitCount = -1; // To account for castles being LivingEntities
     [SerializeField] TextMeshProUGUI playerUnitCountText, enemyUnitCountText;
 
     public static int[] playerFormation = new int[50], enemyFormation = new int[50];
 
     private static Transform _playerFormationOrigin, _enemyFormationOrigin;
     public Transform playerFormationOrigin, enemyFormationOrigin;
+
+    static Queue<Tuple<TroopType, float, Action>> playerSummonQueue = new Queue<Tuple<TroopType, float, Action>>();
 
     void Awake()
     {
@@ -50,6 +61,13 @@ public class GameMaster : MonoBehaviour
                 enemyFormation[i] = enemyFormation[i + 1];
                 enemyFormation[i + 1] = -1;
             }
+        }
+        //Update troop summons
+        // TODO: make this enumarator based
+        if (playerSummonQueue.Count > 0 && playerSummonQueue.Peek().Item2 == Time.time)
+        {
+            var currentSummon = playerSummonQueue.Dequeue();
+            currentSummon.Item3.Invoke();
         }
     }
 
@@ -107,6 +125,14 @@ public class GameMaster : MonoBehaviour
 
     public static Vector2 mapFormationIndexToPosition(bool isAlly, int index)
     {
-            return (isAlly ? _playerFormationOrigin.position : _enemyFormationOrigin.position) + new Vector3(-(index / 5), -(index % 5));
+        int coefficent = isAlly ? 1 : -1;
+        return (isAlly ? _playerFormationOrigin.position : _enemyFormationOrigin.position) + new Vector3(coefficent * -(index / 5), -((float)index % 5));
     }
+
+
+    public static void listNewSpawn(TroopType type, float summonTime, Action onSummon)
+    {
+        playerSummonQueue.Enqueue(new Tuple<TroopType, float, Action>(type, summonTime, onSummon));        
+    }
+
 }
