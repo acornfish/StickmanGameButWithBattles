@@ -38,7 +38,7 @@ public class SummonCard : MonoBehaviour
         {
             GoldSystem.PlayerGold -= price;
 
-            GameMaster.listNewSpawn(troopType, Time.time + (float)troopType, new Action(() =>
+            GameMaster.listNewSpawn(troopType, (float)troopType, new Action(() =>
             {
                 Instantiate(prefab, summonPoint);
             }));

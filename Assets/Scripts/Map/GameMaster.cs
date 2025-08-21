@@ -27,6 +27,7 @@ public class GameMaster : MonoBehaviour
     public Transform playerFormationOrigin, enemyFormationOrigin;
 
     static Queue<Tuple<TroopType, float, Action>> playerSummonQueue = new Queue<Tuple<TroopType, float, Action>>();
+    private bool isCurrentlyTraining = false;
 
     void Awake()
     {
@@ -35,7 +36,7 @@ public class GameMaster : MonoBehaviour
 
 
         for (int i = 0; i < 50; i++)
-        {
+        {   
             playerFormation[i] = -1;
             enemyFormation[i] = -1;
         }
@@ -63,11 +64,10 @@ public class GameMaster : MonoBehaviour
             }
         }
         //Update troop summons
-        // TODO: make this enumarator based
-        if (playerSummonQueue.Count > 0 && playerSummonQueue.Peek().Item2 == Time.time)
+        if (playerSummonQueue.Count > 0 && !isCurrentlyTraining)
         {
-            var currentSummon = playerSummonQueue.Dequeue();
-            currentSummon.Item3.Invoke();
+            isCurrentlyTraining = true;
+            StartCoroutine(spawnNewSoldier());
         }
     }
 
@@ -91,6 +91,33 @@ public class GameMaster : MonoBehaviour
                 if (enemyFormation[i] == -1)
                 {
                     enemyFormation[i] = id;
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+    
+    public static int removeFromFormation(bool isAlly, int id)
+    {
+        if (isAlly)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                if (playerFormation[i] == id)
+                {
+                    playerFormation[i] = -1;
+                    return i;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                if (enemyFormation[i] == id)
+                {
+                    enemyFormation[i] = -1;
                     return i;
                 }
             }
@@ -129,10 +156,27 @@ public class GameMaster : MonoBehaviour
         return (isAlly ? _playerFormationOrigin.position : _enemyFormationOrigin.position) + new Vector3(coefficent * -(index / 5), -((float)index % 5));
     }
 
+    public static void gameOver()
+    {
+        //TODO: ENES buraya oyun bitiş ekranı koy
+    }
+
+    IEnumerator spawnNewSoldier()
+    {
+        var current = playerSummonQueue.Dequeue();
+        yield return new WaitForSeconds(current.Item2);
+        current.Item3.Invoke();
+        isCurrentlyTraining = false;
+    }
 
     public static void listNewSpawn(TroopType type, float summonTime, Action onSummon)
     {
-        playerSummonQueue.Enqueue(new Tuple<TroopType, float, Action>(type, summonTime, onSummon));        
+        playerSummonQueue.Enqueue(new Tuple<TroopType, float, Action>(type, summonTime, onSummon));
     }
+
+
+    public void setPlayerStateGarrison() { playerState = playerState.Garrison; }
+    public void setPlayerStateDefense() { playerState = playerState.Defensive; }
+    public void setPlayerStateOffense() { playerState = playerState.Offensive; }
 
 }

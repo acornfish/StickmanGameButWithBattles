@@ -8,6 +8,7 @@ TagManager:
   - PlayerSummonPoint
   - PlayerBase
   - EnemyBase
+  - Unit
   layers:
   - Default
   - TransparentFX

@@ -22,7 +22,6 @@ public abstract class LivingEntity : GameEntity
         GameObject[] candidates = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
         foreach (GameObject candidate in candidates)
         {
-            Debug.Log(candidate.tag);
             if (candidate.tag == (isAlly ? "PlayerBase" : "EnemyBase"))
             {
                 BasePos = candidate.transform;
@@ -39,7 +38,7 @@ public abstract class LivingEntity : GameEntity
     }
 
 
-    protected internal void Die() {
+    protected internal virtual void Die() {
         if(onDeath != null) onDeath.Invoke();
         if (isAlly) GameMaster.playerUnitCount--; else GameMaster.enemyUnitCount--;
     } 

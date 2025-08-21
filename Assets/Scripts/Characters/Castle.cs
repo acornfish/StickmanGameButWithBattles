@@ -17,10 +17,10 @@ public class Castle : LivingEntity
         base.Update();
     }
 
-    protected internal new void Die()
+    protected internal override void Die()
     {
         //Do not call base.Die();
-        spriteRenderer.color = spriteRenderer.color + new Color(0,0,0,-Time.deltaTime);
-
+        GameMaster.gameOver();
+        Destroy(gameObject);
     }
 }

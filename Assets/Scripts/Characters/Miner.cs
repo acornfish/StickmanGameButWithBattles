@@ -26,12 +26,12 @@ public class Miner : LivingEntity
         base.Update();
         ZPos = Mathf.RoundToInt(transform.position.z);
 
+        //this line means walk to garrison and don't do anything until otherwise stated
+        if ((isAlly ? GameMaster.currentPlayerState : GameMaster.currentEnemyState) == playerState.Garrison) _state = State.WalkingToBase;
+                
         switch (_state)
         {
             case State.Idle:
-                //this line means walk to garrison and don't do anything until otherwise stated
-                if ((isAlly ? GameMaster.currentPlayerState : GameMaster.currentEnemyState) == playerState.Garrison) { _state = State.WalkingToBase; return; }
-                
                 Rock[] AllRocks = FindObjectsByType<Rock>(FindObjectsSortMode.None);
                 OnIdle(AllRocks);
                 break;
@@ -64,8 +64,8 @@ public class Miner : LivingEntity
 
             else
             {
-                var distanceRock = Vector2.Distance(transform.position, rock.miningPos.transform.position);
-                var distanceTarget = Vector2.Distance(transform.position, TargetRock.miningPos.transform.position);
+                var distanceRock = Vector2.Distance(transform.position,  isAlly ? rock.miningPos1.position : rock.miningPos2.position);
+                var distanceTarget = Vector2.Distance(transform.position,  isAlly ? TargetRock.miningPos1.position : TargetRock.miningPos2.position);
 
                 if (distanceRock < distanceTarget) TargetRock = rock;
             }
@@ -78,7 +78,7 @@ public class Miner : LivingEntity
 
     private void OnWalkingToTarget()
     {
-        Vector3 TargetPos = TargetRock.miningPos.position;
+        Vector3 TargetPos = isAlly ? TargetRock.miningPos1.position : TargetRock.miningPos2.position;
         transform.position = Vector3.MoveTowards(transform.position,TargetPos, speed * Time.deltaTime);
         if (transform.position == TargetPos) _state = State.Mining;
     }
@@ -121,7 +121,7 @@ public class Miner : LivingEntity
         } 
     }
 
-    protected internal new void Die()
+    protected internal override void Die()
     {
         base.Die();
         Destroy(gameObject);
